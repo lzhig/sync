@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package main;
+
+
+message Node {
+   string name = 1;
+   string directory = 2;
+}
+
+message Nodes {
+    repeated Node nodes = 1;
+}
+
+enum opID {
+    OP_NONE = 0;
+    OP_CREATE_SYNC_NODE = 1;
+    OP_REMOVE_SYNC_NODE = 2;
+    OP_PUSH_SYNC_NODE = 3;
+    OP_PUSH_DIR_MD5 = 4;
+    OP_GET_FILEINFO = 5;
+    OP_SEND_FILE = 6;
+}
+
+message opCreateSyncNode {
+    Nodes nodes = 1;
+}
+
+enum fileOperation {
+    FO_NONE = 0;
+    FO_DIFF = 1;
+    FO_DELETE = 2;
+    FO_NOCHANGE = 3;
+}
+
+message fileMD5Info {
+    string filename = 1;
+    string md5 = 2;
+    bool isDir = 3;
+    fileOperation operation = 4;
+}
+
+message opPushdirMd5Info {
+    string clientDir = 1;
+    string serverDir = 2;
+    repeated fileMD5Info files = 3;
+}
+
+message opPushSyncNode {
+    repeated fileMD5Info files = 1;
+}
+
+message opSendFile {
+    string filename = 1;
+    string clientDir = 2;
+    string serverDir = 3;
+    string data = 4;
+}
+
+message opC2S {
+    opID op = 1;
+    opCreateSyncNode createSyncNode = 2;
+    opPushSyncNode pushSyncNode = 3;
+    opPushdirMd5Info pushDirMd5Info = 4;
+    opSendFile sendFile = 5;
+}
+
+
+enum errorID {
+    E_NONE = 0;
+    E_OK = 1;
+    E_ALREADY_EXIST = 2;
+    E_ERROR = 3;
+}
+
+message opGetFileInfo {
+    string filename = 1;
+    string clientDir = 2;
+    string serverDir = 3;
+}
+
+message opS2C {
+    opID op = 1;
+    errorID err = 2;
+    opGetFileInfo getFileInfo = 3;
+}
